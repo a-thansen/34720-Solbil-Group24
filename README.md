@@ -3,15 +3,15 @@ GENPOP To-Do List:
 - [x] Dev-Environment
 - [ ] CANBUS: Reading messages
 
-- [x] INP: Detect input sources 
-- [x] INP: Prioritize
+- [ ] INP: Detect input sources 
+- [ ] INP: Prioritize
 
-- [x] LED: Status (depends on INP)
+- [ ] LED: Status (depends on INP)
     - [x] LED: set-up and switching between
+    - [ ] LED: potential visual to volume control?
 
-- [x] VOL: Control the volume (digi potentiometer?)
-- [x] BUILT-IN AUDIO: Audio messages (Blink, Signal)
-- [ ] Set up BUILT-IN AUDIO interrupt
+- [ ] VOL: Control the volume (digi potentiometer?)
+- [ ] BUILT-IN AUDIO: Audio messages (Blink, Signal)
 
 - [ ] TBA
 

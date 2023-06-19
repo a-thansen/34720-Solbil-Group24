@@ -21,7 +21,7 @@ void set_potentiometer(uint16_t value) {
     digitalWrite(POTENTIOMETER_CS, LOW);
 //    printf("Set %d to LOW\r\n", POTENTIOMETER_CS);
 
-    delay(100);
+ //  delay(100);
 
     // 4 bits
     uint16_t addr = 0x00; // Volatile wiper 0
@@ -32,7 +32,7 @@ void set_potentiometer(uint16_t value) {
 
     SPI.transfer16(packed);
 
-    delay(100);
+  //  delay(100);
     digitalWrite(POTENTIOMETER_CS, HIGH);
 //  printf("Set %d to HIGH\r\n", POTENTIOMETER_CS);
 }

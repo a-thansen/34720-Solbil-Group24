@@ -1,11 +1,11 @@
 
 #include "Arduino.h"
-#include "led.h"
 #include <arduino-timer.h>
+
+#include "led.h"
 #include "input.h"
 #include "potentiometer.h"
 #include "sound.h"
-
 
 #define ENCODER_A D7
 #define ENCODER_B D6
@@ -13,22 +13,24 @@
 
 auto timer = timer_create_default(); // create a timer with default settings using arduino-timer library
 
+//global variables for encoder, could be made into a struct...
 int prev_a;
 int prev_b;
 int volume;
+
 char car_alert = 5 ; // due to lack of CANBUS, this variable can be changed to 0 = indicator disable, 1 = indicator enable, 3 = low battery notification.
 
 int primaryInput[50];
 // int secondaryInput[50];
-int std1;
-// int std2;
+int SD1;
+// int SD2;
 
 struct aux
 {
-  int STD[8];
+  int SD[8];
   bool playing;
   /* data */
-}aux1, aux2;
+}aux1; //aux2 
 
 bool readAuxAlert(void *){
   int i;
@@ -38,11 +40,11 @@ bool readAuxAlert(void *){
       // secondaryInput[i] = analogRead(SECONDARY_INPUT_PIN);
     }
 
-    std1 = findStandardDeviation(primaryInput, 50);
-    // std2 = findStandardDeviation(secondaryInput, 50);
+    SD1 = findStandardDeviation(primaryInput, 50);
+    // SD2 = findStandardDeviation(secondaryInput, 50);
 
-    pushToBack(aux1.STD, 8, std1);
-    // pushToBack(aux2.STD, 8, std2);
+    pushToBack(aux1.SD, 8, SD1);
+    // pushToBack(aux2.SD, 8, SD2);
 
    if(car_alert != 5){
     digitalWrite(CARALERT_PIN, HIGH);
@@ -56,15 +58,15 @@ bool readAuxAlert(void *){
 bool checkInput(void *){
   int i;
   int count1 = 0;
-  int count2 = 0;
+  // int count2 = 0;
 
   for(i=0; i < 8; i++){
-    if(aux1.STD[i] > 20){
+    if(aux1.SD[i] > 20){
       count1++;
     }
-    if(aux2.STD[i] > 20){
-      count2++;
-    }
+    // if(aux2.SD[i] > 20){
+    //   count2++;
+    // }
   }
 
   if(count1 > 2){
@@ -72,11 +74,11 @@ bool checkInput(void *){
   }else{
     aux1.playing = false;
   }
-  if(count2 > 2){
-    aux2.playing = true;
-  }else{
-    aux2.playing = false;
-  }
+  // if(count2 > 2){
+  //   aux2.playing = true;
+  // }else{
+  //   aux2.playing = false;
+  // }
 
   return true;
 }
@@ -122,8 +124,10 @@ void vol2Pot(){
     int vol = volume;
     int pot;
 
+    // volume increments by 10% 
+
     if(vol > 90){
-      pot = 0;
+      pot = 0; 
     }else if(vol > 80 && vol < 90){
       pot = 13;
     }else if(vol > 70 && vol < 80){
@@ -143,7 +147,8 @@ void vol2Pot(){
     }else if (vol > 5 && vol < 9){
       pot = 108;
     }else if(vol < 5){
-      pot = 129;
+      pot = 129; // this will not completely turn the voltage to 0, which is why the MUX is disabled to not output any signal.
+      setMux(0); //silences
     }
 
   
@@ -154,7 +159,7 @@ void carAlertInterrupt(){
    if(car_alert = 1){
       playIndicator(1);
       digitalWrite(CARALERT_PIN, LOW);
-      //turn down vol
+      //turn down vol (calibrated once tested)
     }else if(car_alert = 0){
        //turn up vol
       playIndicator(0);
@@ -178,17 +183,19 @@ void setupPotVol(){
   attachInterrupt(digitalPinToInterrupt(ENCODER_A), encoderInterrupt, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ENCODER_B), encoderInterrupt, CHANGE);
 
- // attachInterrupt(digitalPinToInterrupt(CARALERT_PIN), carAlertInterrupt, HIGH);
-
+ // attachInterrupt(digitalPinToInterrupt(CARALERT_PIN), carAlertInterrupt, HIGH); // due to lack of CANBUS this could not be implemented
+  
+  //setting a default start up volume
   volume = 10;
   init_potentiometer();
 }
 
 void prioritize(){
+  
+  //prioritizing the primary source
 
   if(aux1.playing){
     setMux(1);
-   // volume = ?
     switchLED(1);
   }else{
     setMux(2);
@@ -198,33 +205,19 @@ void prioritize(){
 
 void setup()
 {
+  //setting up necessary pins
   setupPotVol();
   setupJack();
   setupLED();
 
-  timer.every(250, readAuxAlert);
-  timer.every(2000, checkInput);
-
+  timer.every(250, readAuxAlert); // readAuxAlert is called every 250 ms
+  timer.every(500, checkInput); // checkInput is called every 500ms
 
 }
-
 
 void loop(){
-
-  timer.tick();
-  prioritize();
-  vol2Pot();
-
-  printf("Volume: %d\r\n", volume);
-  
+  timer.tick(); // ticks the timer 
+  prioritize(); // signal prioritization
+  vol2Pot(); 
 }
-
-// 0 3.3 V = > vol = 100
-// 13 => vol = 90
-// 30 2.56 = 
-// 60 1.78
-// 90 1 V
-// 120 0.24 V => vol =
-// ..
-// 129 0,.-134 V => vol = 0
 
