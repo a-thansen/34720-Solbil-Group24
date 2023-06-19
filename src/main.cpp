@@ -84,6 +84,7 @@ bool checkInput(void *){
 }
 
 void encoderInterrupt() {
+  //written by Polly
   int a = digitalRead(ENCODER_A);
   int b = digitalRead(ENCODER_B);
 
@@ -149,9 +150,7 @@ void vol2Pot(){
     }else if(vol < 5){
       pot = 129; // this will not completely turn the voltage to 0, which is why the MUX is disabled to not output any signal.
       setMux(0); //silences
-    }
-
-  
+    }  
   set_potentiometer(pot);
 }
 
