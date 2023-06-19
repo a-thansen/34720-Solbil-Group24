@@ -11,17 +11,6 @@ void pushToBack(int* array, int length, int value) {
     array[length-1] = value;
 }
 
-// prints array for debugging purposes
-
-void print_array(int* array, int length) {
-    printf("[");
-    printf("%d", array[0]);
-    for (int i = 1; i < length; i++) {
-        printf(", %d", array[i]);
-    }
-    printf("]");
-}
-
 // calculates an imprecise standard deviation
 
 int findStandardDeviation(int *array, int count) {
