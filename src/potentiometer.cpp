@@ -1,4 +1,5 @@
 // This code is for the MCP4131-503E/P
+// THIS CODE WAS WRITTEN BY POLLY
 #include "potentiometer.h"
 // #include <SPI.h>
 
