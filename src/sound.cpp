@@ -22,6 +22,8 @@ int noteDurations[] = {
   3, 3, 3, 3
 };
 
+// this code is heavily based on public domain code  by Tom Igoe
+
 void playIndicator(bool enable){
   if(enable){
      for (int thisNote = 0; thisNote < 8; thisNote++) {
